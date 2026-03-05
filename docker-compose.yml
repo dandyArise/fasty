@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Standard HTTP service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./fasty.yml:/app/fasty.yml # Mount configuration file
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=.
+      - ENV=development
+    restart: unless-stopped
+    command: [ "python", "-m", "fasty.main", "--port", "8000" ]
+
+  # HTTPS service with self-signed certificates
+  app-https:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8443:8443"
+    volumes:
+      - .:/app
+      - ./fasty.yml:/app/fasty.yml # Mount configuration file
+      - ./certs:/app/certs # Mount certificates directory
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=.
+      - ENV=development
+    restart: unless-stopped
+    command: [ "python", "-m", "fasty.main", "--https", "--port", "8443" ]
