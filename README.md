@@ -5,16 +5,16 @@
   <strong>Fasty is a dynamic REST API server that instantly turns a YAML configuration file into fully-featured mock API endpoints, complete with routes, pagination, HATEOAS links, and rich <code>faker</code> data for rapid frontend prototyping.</strong>
 </p>
   
-  <p>
+<p>
     <a href="https://github.com/dandyArise/fasty"><img src="https://img.shields.io/badge/App-Fasty-4285F4?style=for-the-badge" alt="App Name Badge"/></a>
     <a href="https://github.com/dandyArise/fasty/stargazers"><img src="https://img.shields.io/github/stars/dandyArise/fasty?style=for-the-badge&color=ffd166" alt="Stars Badge"/></a>
     <a href="https://github.com/dandyArise/fasty/network/members"><img src="https://img.shields.io/github/forks/dandyArise/fasty?style=for-the-badge&color=06d6a0" alt="Forks Badge"/></a>
     <a href="https://github.com/dandyArise/fasty/issues"><img src="https://img.shields.io/github/issues/dandyArise/fasty?style=for-the-badge&color=ef476f" alt="Issues Badge"/></a>
-    <a href="https://github.com/dandyArise/fasty/blob/main/LICENSE"><img src="https://img.shields.io/github/license/dandyArise/fasty?style=for-the-badge&color=118ab2" alt="License Badge"/></a>
-    <img src="https://img.shields.io/badge/Python-3.7+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Badge"/>
+    <a href="https://github.com/dandyArise/fasty/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/License-BSL%201.1-118ab2?style=for-the-badge" alt="License Badge"/></a>
+    <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Badge"/>
     <img src="https://img.shields.io/badge/FastAPI-0.68+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI Badge"/>
     <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Badge"/>
-  </p>
+</p>
 </div>
 
 ## 🌟 Overview
