@@ -6,11 +6,11 @@
 </p>
   
   <p>
-    <a href="https://github.com/homhba/fasty"><img src="https://img.shields.io/badge/App-Fasty-4285F4?style=for-the-badge" alt="App Name Badge"/></a>
-    <a href="https://github.com/homhba/fasty/stargazers"><img src="https://img.shields.io/github/stars/homhba/fasty?style=for-the-badge&color=ffd166" alt="Stars Badge"/></a>
-    <a href="https://github.com/homhba/fasty/network/members"><img src="https://img.shields.io/github/forks/homhba/fasty?style=for-the-badge&color=06d6a0" alt="Forks Badge"/></a>
-    <a href="https://github.com/homhba/fasty/issues"><img src="https://img.shields.io/github/issues/homhba/fasty?style=for-the-badge&color=ef476f" alt="Issues Badge"/></a>
-    <a href="https://github.com/homhba/fasty/blob/main/LICENSE"><img src="https://img.shields.io/github/license/homhba/fasty?style=for-the-badge&color=118ab2" alt="License Badge"/></a>
+    <a href="https://github.com/dandyArise/fasty"><img src="https://img.shields.io/badge/App-Fasty-4285F4?style=for-the-badge" alt="App Name Badge"/></a>
+    <a href="https://github.com/dandyArise/fasty/stargazers"><img src="https://img.shields.io/github/stars/dandyArise/fasty?style=for-the-badge&color=ffd166" alt="Stars Badge"/></a>
+    <a href="https://github.com/dandyArise/fasty/network/members"><img src="https://img.shields.io/github/forks/dandyArise/fasty?style=for-the-badge&color=06d6a0" alt="Forks Badge"/></a>
+    <a href="https://github.com/dandyArise/fasty/issues"><img src="https://img.shields.io/github/issues/dandyArise/fasty?style=for-the-badge&color=ef476f" alt="Issues Badge"/></a>
+    <a href="https://github.com/dandyArise/fasty/blob/main/LICENSE"><img src="https://img.shields.io/github/license/dandyArise/fasty?style=for-the-badge&color=118ab2" alt="License Badge"/></a>
     <img src="https://img.shields.io/badge/Python-3.7+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Badge"/>
     <img src="https://img.shields.io/badge/FastAPI-0.68+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI Badge"/>
     <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Badge"/>
@@ -42,7 +42,7 @@ It uses `watchdog` to monitor changes in your YAML file and seamlessly updates t
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/homhba/fasty.git
+   git clone https://github.com/dandyArise/fasty.git
    cd fasty
    ```
 
