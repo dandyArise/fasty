@@ -179,5 +179,5 @@ For commercial use inquiries, please refer to `COMMERCIAL_LICENSE.md` and `NOTIC
 ---
 
 <div align="center">
-  Made with ❤️ by <a href="https://github.com/homhba">@dandy</a>
+  Made with ❤️ by <a href="https://github.com/dandyArise">@dandy</a>
 </div>
