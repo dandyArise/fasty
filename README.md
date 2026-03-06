@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="fasty.svg" alt="Fasty Logo" width="450">
+  <img src="logo.svg" alt="Fasty Logo" width="200">
   
  <p>
   <strong>Fasty is a dynamic REST API server that instantly turns a YAML configuration file into fully-featured mock API endpoints, complete with routes, pagination, HATEOAS links, and rich <code>faker</code> data for rapid frontend prototyping.</strong>

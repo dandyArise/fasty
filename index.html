@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fasty — YAML-powered Mock APIs</title>
+  <meta name="description" content="Fasty lit ton YAML, génère les données avec Faker, et expose une API REST complète en quelques millisecondes. Zero Python code required."/>
+  <meta name="keywords" content="API, REST, Mock, YAML, Python, fasty, Faker, HATEOAS, JSON, open source"/>
+  <meta name="author" content="dandyArise"/>
+  <meta name="robots" content="index, follow"/>
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://github.com/dandyArise/fasty"/>
+  <meta property="og:title" content="Fasty — YAML-powered Mock APIs"/>
+  <meta property="og:description" content="Fasty lit ton YAML, génère les données avec Faker, et expose une API REST complète en quelques millisecondes. Zero Python code required."/>
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="https://github.com/dandyArise/fasty"/>
+  <meta property="twitter:title" content="Fasty — YAML-powered Mock APIs"/>
+  <meta property="twitter:description" content="Fasty lit ton YAML, génère les données avec Faker, et expose une API REST complète en quelques millisecondes. Zero Python code required."/>
+  
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f5f0; --bg2: #efece4; --surface: #ffffff;
+      --border: #e0dbd0; --border2: #c8c2b4;
+      --accent: #1a6b3a; --accent-light: #e8f5ee; --accent2: #c94a00;
+      --text: #1a1810; --text2: #4a4640; --muted: #8c8680;
+      --code-bg: #1e1c18; --code-text: #e8e4dc; --yellow: #f5c842;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Fraunces', serif; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(circle, #c8c2b4 1px, transparent 1px); background-size: 28px 28px; opacity: 0.45; pointer-events: none; z-index: 0; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; background: rgba(247,245,240,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-text { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.5rem; color: var(--text); letter-spacing: -0.04em; }
+    .logo-text em { color: var(--accent); font-style: italic; }
+    nav ul { list-style: none; display: flex; gap: 32px; }
+    nav a.nl { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--muted); text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; }
+    nav a.nl:hover { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    /* LANG TOGGLE */
+    .lang-toggle { display: flex; align-items: center; background: var(--bg2); border: 1px solid var(--border2); padding: 3px; gap: 2px; }
+    .lang-btn { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; padding: 5px 10px; border: none; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+    .lang-btn.active { background: var(--accent); color: #fff; }
+    .lang-btn:hover:not(.active) { color: var(--accent); }
+
+    .nav-cta { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 600; background: var(--text); color: var(--bg); padding: 9px 20px; text-decoration: none; letter-spacing: 0.04em; transition: background 0.2s, transform 0.2s; }
+    .nav-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+    /* HERO */
+    .hero { position: relative; z-index: 1; min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 60px; padding: 100px 48px 80px; max-width: 1280px; margin: 0 auto; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--accent); background: var(--accent-light); border: 1px solid rgba(26,107,58,0.2); padding: 5px 12px; margin-bottom: 32px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .hero-badge span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+    h1 { font-size: clamp(2.8rem, 5vw, 5rem); font-weight: 900; line-height: 1.02; letter-spacing: -0.04em; margin-bottom: 24px; }
+    h1 .it { font-style: italic; font-weight: 300; color: var(--muted); }
+    h1 .gr { color: var(--accent); }
+    .hero-desc { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--text2); line-height: 1.9; max-width: 460px; margin-bottom: 40px; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-p { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; font-weight: 600; padding: 14px 28px; text-decoration: none; letter-spacing: 0.04em; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; }
+    .btn-p:hover { background: #155730; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,107,58,0.25); }
+    .btn-o { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; padding: 14px 28px; text-decoration: none; border: 1.5px solid var(--border2); letter-spacing: 0.04em; transition: border-color 0.2s, color 0.2s; }
+    .btn-o:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* YAML CARD */
+    .hero-right { position: relative; }
+    .yaml-card { background: var(--code-bg); border-radius: 3px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.04); transform: rotate(1.5deg); transition: transform 0.5s ease; }
+    .yaml-card:hover { transform: rotate(0deg) translateY(-6px); }
+    .yaml-bar { display: flex; align-items: center; gap: 7px; padding: 12px 16px; background: #16140f; border-bottom: 1px solid #2e2c26; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+    .yaml-fname { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: #6b6860; margin-left: auto; letter-spacing: 0.08em; }
+    .yaml-body { padding: 24px 28px; font-family: 'IBM Plex Mono', monospace; font-size: 0.77rem; line-height: 1.95; color: var(--code-text); }
+    .yk { color: #79c0ff; } .yv { color: #a5d6a7; } .ys { color: #ffd180; } .yn { color: #ff9d74; } .yb { color: #ce93d8; } .yc { color: #4a4840; font-style: italic; }
+    .result-pill { position: absolute; bottom: -18px; right: -16px; background: var(--surface); border: 1.5px solid var(--border); padding: 12px 18px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); animation: floatPill 5s ease-in-out infinite; }
+    @keyframes floatPill { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .pill-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+    .pill-t { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text2); }
+    .pill-t strong { color: var(--accent); }
+
+    /* STRIP */
+    .strip { position: relative; z-index: 1; background: var(--text); padding: 16px 0; overflow: hidden; }
+    .strip-inner { display: flex; gap: 0; animation: scrollx 22s linear infinite; white-space: nowrap; }
+    @keyframes scrollx { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .si { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(247,245,240,0.5); padding: 0 32px; display: flex; align-items: center; gap: 10px; }
+    .si .sep { color: var(--yellow); }
+
+    /* SECTIONS */
+    .section-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 14px; }
+    h2 { font-size: clamp(1.9rem, 3.5vw, 3rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 16px; }
+    h2 em { font-style: italic; font-weight: 300; color: var(--muted); }
+    .section-sub { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--text2); line-height: 1.85; max-width: 500px; margin-bottom: 56px; }
+
+    /* HOW */
+    .how { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 100px 48px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .step { background: var(--bg); padding: 44px 36px; transition: background 0.3s; position: relative; overflow: hidden; }
+    .step::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+    .step:hover { background: var(--surface); }
+    .step:hover::after { transform: scaleX(1); }
+    .step-num { font-family: 'Fraunces', serif; font-size: 5rem; font-weight: 900; line-height: 1; color: var(--border2); margin-bottom: 20px; letter-spacing: -0.05em; }
+    .step-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .step-desc { font-family: 'IBM Plex Mono', monospace; font-size: 0.73rem; color: var(--text2); line-height: 1.85; }
+    .step-tag { display: inline-block; margin-top: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; background: var(--accent-light); color: var(--accent); padding: 4px 10px; border: 1px solid rgba(26,107,58,0.2); }
+
+    /* CONFIG */
+    .fields-section { position: relative; z-index: 1; background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 100px 48px; }
+    .fields-inner { max-width: 1200px; margin: 0 auto; }
+    .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .field-table { border: 1px solid var(--border); background: var(--surface); overflow: hidden; }
+    .field-table-header { display: grid; grid-template-columns: 1fr 2fr; background: var(--text); color: var(--bg); padding: 12px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .field-row { display: grid; grid-template-columns: 1fr 2fr; padding: 15px 20px; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+    .field-row:last-child { border-bottom: none; }
+    .field-row:hover { background: var(--accent-light); }
+    .field-key { font-family: 'IBM Plex Mono', monospace; font-size: 0.73rem; color: var(--accent2); font-weight: 600; }
+    .field-desc { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--text2); line-height: 1.65; }
+    .yaml-full { background: var(--code-bg); border-radius: 2px; overflow: hidden; }
+    .yaml-full-header { display: flex; align-items: center; justify-content: space-between; padding: 13px 20px; background: #16140f; border-bottom: 1px solid #2e2c26; }
+    .yaml-full-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: #6b6860; letter-spacing: 0.08em; }
+    .yaml-copy-btn { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; background: transparent; border: 1px solid #3a3830; color: #6b6860; padding: 4px 10px; cursor: pointer; letter-spacing: 0.08em; transition: color 0.2s, border-color 0.2s; }
+    .yaml-copy-btn:hover { color: #a5d6a7; border-color: #a5d6a7; }
+    .yaml-full-body { padding: 26px 28px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; line-height: 1.95; color: var(--code-text); overflow-x: auto; }
+
+    /* ENDPOINTS */
+    .endpoints-section { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 100px 48px; }
+    .endpoint-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .endpoint-card { background: var(--bg); padding: 32px; transition: background 0.2s; display: flex; flex-direction: column; gap: 10px; }
+    .endpoint-card:hover { background: var(--surface); }
+    .emethod { font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; font-weight: 600; padding: 4px 10px; letter-spacing: 0.08em; display: inline-block; width: fit-content; }
+    .mget { background: #e8f5ee; color: var(--accent); }
+    .epath { font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem; color: var(--text); font-weight: 600; }
+    .edesc { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--muted); line-height: 1.7; }
+    .ebadge { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; display: inline-block; width: fit-content; }
+
+    /* RUN SECTION (replaces install) */
+    .run-section { position: relative; z-index: 1; background: var(--text); padding: 100px 48px; text-align: center; overflow: hidden; }
+    .run-section::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 24px 24px; pointer-events: none; }
+    .run-section .section-eyebrow { color: var(--yellow); }
+    .run-section h2 { color: var(--bg); }
+    .run-section h2 em { color: rgba(247,245,240,0.25); }
+    .run-section .section-sub { color: rgba(247,245,240,0.45); margin: 0 auto 48px; }
+
+    .run-tabs { display: inline-flex; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 24px; }
+    .run-tab { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; padding: 9px 20px; border: none; background: transparent; color: rgba(255,255,255,0.35); cursor: pointer; transition: all 0.2s; }
+    .run-tab.active { background: var(--yellow); color: #000; }
+    .run-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+
+    .run-box { display: none; flex-direction: column; gap: 10px; max-width: 640px; margin: 0 auto; }
+    .run-box.active { display: flex; }
+    .run-cmd-line { display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 14px 22px; cursor: pointer; transition: border-color 0.3s; text-align: left; }
+    .run-cmd-line:hover { border-color: var(--yellow); }
+    .rp { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--yellow); flex-shrink: 0; }
+    .rc { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: #e8e4dc; flex: 1; }
+    .rc .comment { color: rgba(255,255,255,0.25); font-style: italic; }
+    .rcopy { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; background: transparent; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.3); padding: 5px 10px; cursor: pointer; letter-spacing: 0.08em; transition: all 0.2s; flex-shrink: 0; }
+    .rcopy:hover { color: var(--yellow); border-color: var(--yellow); }
+
+    /* FOOTER */
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .footer-t { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ANIM */
+    .fu { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .fu.v { opacity: 1; transform: translateY(0); }
+
+    /* LANG transition */
+    [data-fr], [data-en] { transition: opacity 0.15s ease; }
+
+    @media (max-width: 960px) {
+      nav { padding: 0 20px; } nav ul { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
+      .hero-right { display: none; }
+      .steps, .endpoint-grid { grid-template-columns: 1fr; }
+      .fields-grid { grid-template-columns: 1fr; }
+      .how, .fields-section, .endpoints-section, .run-section { padding-left: 24px; padding-right: 24px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="logo">
+      <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="6" fill="#1a6b3a"/>
+        <path d="M21 5L11 19H18L15 31L25 17H18L21 5Z" fill="#f7f5f0" stroke="#f7f5f0" stroke-width="0.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-text">fast<em>y</em></span>
+    </a>
+    <ul>
+      <li><a href="#how" class="nl" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a></li>
+      <li><a href="#config" class="nl" data-fr="Configuration" data-en="Configuration">Configuration</a></li>
+      <li><a href="#endpoints" class="nl" data-fr="Endpoints" data-en="Endpoints">Endpoints</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+      </div>
+      <a href="https://github.com/dandyArise/fasty" target="_blank" class="nav-cta">GitHub ↗</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-badge"><span></span>YAML-powered · Mock APIs · Python</div>
+      <h1>
+        <span data-fr="Des APIs REST" data-en="REST APIs">Des APIs REST</span><br>
+        <span class="it" data-fr="depuis un simple" data-en="from a single">depuis un simple</span><br>
+        <span class="gr" data-fr="fichier YAML." data-en="YAML file.">fichier YAML.</span>
+      </h1>
+      <p class="hero-desc">
+        <span data-fr="Définis tes modèles dans <code>fasty.yml</code>, lance le serveur.<br>Fasty génère les données, monte les routes, active la pagination et les liens HATEOAS — sans écrire une seule ligne de Python." data-en="Define your models in <code>fasty.yml</code>, start the server.<br>Fasty generates data, mounts routes, enables pagination and HATEOAS links — without writing a single line of Python.">Définis tes modèles dans <code>fasty.yml</code>, lance le serveur.<br>Fasty génère les données, monte les routes, active la pagination et les liens HATEOAS — sans écrire une seule ligne de Python.</span>
+      </p>
+      <div class="hero-actions">
+        <a href="#how" class="btn-p" data-fr="Voir comment ça marche →" data-en="See how it works →">Voir comment ça marche →</a>
+        <a href="https://github.com/dandyArise/fasty" target="_blank" class="btn-o">★ GitHub</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="yaml-card">
+        <div class="yaml-bar">
+          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+          <span class="yaml-fname">fasty.yml</span>
+        </div>
+        <div class="yaml-body">
+<span class="yk">locale</span>: <span class="ys">"en_US"</span>
+<span class="yk">models</span>:
+
+  <span class="yk">users</span>: <span class="yc"># → /users, /users/{id}</span>
+    <span class="yk">pagination</span>: <span class="yb">true</span>
+    <span class="yk">hateoas</span>: <span class="yb">true</span>
+    <span class="yk">fake</span>:
+      <span class="yk">_count</span>: <span class="yn">10</span>
+      <span class="yk">first_name</span>: <span class="ys">first_name</span>
+      <span class="yk">last_name</span>: <span class="ys">last_name</span>
+      <span class="yk">email</span>: <span class="ys">email</span>
+    <span class="yk">data</span>:
+      - <span class="yk">id</span>: <span class="yn">100</span>
+        <span class="yk">first_name</span>: <span class="ys">John</span>
+        <span class="yk">email</span>: <span class="ys">john.doe@example.com</span>
+
+  <span class="yk">posts</span>: <span class="yc"># → /posts, /posts/{id}</span>
+    <span class="yk">fake</span>:
+      <span class="yk">_count</span>: <span class="yn">5</span>
+      <span class="yk">title</span>: <span class="ys">sentence</span>
+      <span class="yk">body</span>: <span class="ys">text</span>
+        </div>
+      </div>
+      <div class="result-pill">
+        <div class="pill-dot"></div>
+        <div class="pill-t"><strong>15</strong> records · <strong>4</strong> <span data-fr="routes montées" data-en="routes mounted">routes montées</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STRIP -->
+  <div class="strip">
+    <div class="strip-inner">
+      <div class="si"><span class="sep">⚡</span><span data-fr="Zéro code Python" data-en="Zero Python code">Zéro code Python</span></div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Pagination auto" data-en="Auto pagination">Pagination auto</span></div>
+      <div class="si"><span class="sep">⚡</span>HATEOAS links</div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Faker intégré" data-en="Built-in Faker">Faker intégré</span></div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Data hardcodée" data-en="Hardcoded data">Data hardcodée</span></div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Docker &amp; local" data-en="Docker &amp; local">Docker &amp; local</span></div>
+      <div class="si"><span class="sep">⚡</span>100% Python</div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Zéro code Python" data-en="Zero Python code">Zéro code Python</span></div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Pagination auto" data-en="Auto pagination">Pagination auto</span></div>
+      <div class="si"><span class="sep">⚡</span>HATEOAS links</div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Faker intégré" data-en="Built-in Faker">Faker intégré</span></div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Data hardcodée" data-en="Hardcoded data">Data hardcodée</span></div>
+      <div class="si"><span class="sep">⚡</span><span data-fr="Docker &amp; local" data-en="Docker &amp; local">Docker &amp; local</span></div>
+      <div class="si"><span class="sep">⚡</span>100% Python</div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="how" id="how">
+    <div class="section-eyebrow fu" data-fr="// Comment ça marche" data-en="// How it works">// Comment ça marche</div>
+    <h2 class="fu"><span data-fr="Trois étapes." data-en="Three steps.">Trois étapes.</span> <em data-fr="C'est tout." data-en="That's it.">C'est tout.</em></h2>
+    <p class="section-sub fu" data-fr="Fasty lit ton YAML, génère les données avec Faker, et expose une API REST complète en quelques millisecondes." data-en="Fasty reads your YAML, generates data with Faker, and exposes a full REST API in milliseconds.">Fasty lit ton YAML, génère les données avec Faker, et expose une API REST complète en quelques millisecondes.</p>
+    <div class="steps">
+      <div class="step fu">
+        <div class="step-num">01</div>
+        <div class="step-title" data-fr="Crée fasty.yml" data-en="Create fasty.yml">Crée fasty.yml</div>
+        <p class="step-desc" data-fr="Définis tes modèles, le nombre de faux records à générer, et les champs Faker à utiliser. Injecte aussi des données hardcodées si besoin." data-en="Define your models, the number of fake records to generate, and the Faker fields to use. You can also inject hardcoded data.">Définis tes modèles, le nombre de faux records à générer, et les champs Faker à utiliser. Injecte aussi des données hardcodées si besoin.</p>
+        <span class="step-tag">fasty.yml</span>
+      </div>
+      <div class="step fu">
+        <div class="step-num">02</div>
+        <div class="step-title" data-fr="Lance le serveur" data-en="Start the server">Lance le serveur</div>
+        <p class="step-desc" data-fr="En local avec <code>python -m fasty</code> ou via Docker. Le serveur parse le YAML, génère les données et monte toutes les routes automatiquement." data-en="Locally with <code>python -m fasty</code> or via Docker. The server parses the YAML, generates data and mounts all routes automatically.">En local avec <code>python -m fasty</code> ou via Docker. Le serveur parse le YAML, génère les données et monte toutes les routes automatiquement.</p>
+        <span class="step-tag" data-fr="local ou Docker" data-en="local or Docker">local ou Docker</span>
+      </div>
+      <div class="step fu">
+        <div class="step-num">03</div>
+        <div class="step-title" data-fr="Consomme l'API" data-en="Consume the API">Consomme l'API</div>
+        <p class="step-desc" data-fr="Chaque modèle expose <code>/model</code> et <code>/model/{id}</code> avec pagination, HATEOAS links et réponses JSON cohérentes." data-en="Each model exposes <code>/model</code> and <code>/model/{id}</code> with pagination, HATEOAS links and consistent JSON responses.">Chaque modèle expose <code>/model</code> et <code>/model/{id}</code> avec pagination, HATEOAS links et réponses JSON cohérentes.</p>
+        <span class="step-tag">GET /users</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG FIELDS -->
+  <div class="fields-section" id="config">
+    <div class="fields-inner">
+      <div class="section-eyebrow fu" data-fr="// Configuration" data-en="// Configuration">// Configuration</div>
+      <h2 class="fu"><span data-fr="Chaque champ" data-en="Every field">Chaque champ</span> <em data-fr="expliqué." data-en="explained.">expliqué.</em></h2>
+      <p class="section-sub fu" data-fr="La référence complète des options disponibles dans fasty.yml." data-en="The complete reference for all options available in fasty.yml.">La référence complète des options disponibles dans <code>fasty.yml</code>.</p>
+      <div class="fields-grid">
+        <div class="fu">
+          <div class="field-table">
+            <div class="field-table-header">
+              <div data-fr="Champ" data-en="Field">Champ</div>
+              <div data-fr="Description" data-en="Description">Description</div>
+            </div>
+            <div class="field-row"><div class="field-key">locale</div><div class="field-desc" data-fr='Locale Faker (ex: "en_US", "fr_FR") pour les données générées' data-en='Faker locale (e.g. "en_US", "fr_FR") for generated data'>Locale Faker (ex: "en_US", "fr_FR") pour les données générées</div></div>
+            <div class="field-row"><div class="field-key">models</div><div class="field-desc" data-fr="Map de modèles. Chaque clé devient automatiquement un endpoint REST" data-en="Model map. Each key automatically becomes a REST endpoint">Map de modèles. Chaque clé devient automatiquement un endpoint REST</div></div>
+            <div class="field-row"><div class="field-key">pagination</div><div class="field-desc" data-fr="<code>true/false</code> — Active la pagination par chunks sur le endpoint collection" data-en="<code>true/false</code> — Enables chunked pagination on the collection endpoint"><code>true/false</code> — Active la pagination par chunks sur le endpoint collection</div></div>
+            <div class="field-row"><div class="field-key">hateoas</div><div class="field-desc" data-fr="<code>true/false</code> — Injecte des <code>_links</code> dans chaque réponse (self + collection)" data-en="<code>true/false</code> — Injects <code>_links</code> in every response (self + collection)"><code>true/false</code> — Injecte des <code>_links</code> dans chaque réponse (self + collection)</div></div>
+            <div class="field-row"><div class="field-key">fake._count</div><div class="field-desc" data-fr="Nombre de records aléatoires à générer au démarrage du serveur" data-en="Number of random records to generate at server startup">Nombre de records aléatoires à générer au démarrage du serveur</div></div>
+            <div class="field-row"><div class="field-key">fake.[field]</div><div class="field-desc" data-fr="Nom d'un générateur Faker : first_name, email, text, sentence, word…" data-en="A Faker generator name: first_name, email, text, sentence, word…">Nom d'un générateur Faker : first_name, email, text, sentence, word…</div></div>
+            <div class="field-row"><div class="field-key">data</div><div class="field-desc" data-fr="Liste d'objets hardcodés injectés en plus des données générées" data-en="List of hardcoded objects injected alongside generated data">Liste d'objets hardcodés injectés en plus des données générées</div></div>
+          </div>
+        </div>
+        <div class="fu">
+          <div class="yaml-full">
+            <div class="yaml-full-header">
+              <span class="yaml-full-title">fasty.yml — <span data-fr="exemple complet" data-en="full example">exemple complet</span></span>
+              <button class="yaml-copy-btn" onclick="copyYaml()">COPY</button>
+            </div>
+            <div class="yaml-full-body">
+<span class="yk">locale</span>: <span class="ys">"fr_FR"</span>
+
+<span class="yk">models</span>:
+
+  <span class="yk">users</span>:
+    <span class="yk">pagination</span>: <span class="yb">true</span>
+    <span class="yk">hateoas</span>: <span class="yb">true</span>
+    <span class="yk">fake</span>:
+      <span class="yk">_count</span>: <span class="yn">10</span>
+      <span class="yk">first_name</span>: <span class="ys">first_name</span>
+      <span class="yk">last_name</span>: <span class="ys">last_name</span>
+      <span class="yk">email</span>: <span class="ys">email</span>
+    <span class="yk">data</span>:
+      - <span class="yk">id</span>: <span class="yn">100</span>
+        <span class="yk">first_name</span>: <span class="ys">John</span>
+        <span class="yk">last_name</span>: <span class="ys">Doe</span>
+        <span class="yk">email</span>: <span class="ys">john.doe@example.com</span>
+
+  <span class="yk">posts</span>:
+    <span class="yk">pagination</span>: <span class="yb">false</span>
+    <span class="yk">hateoas</span>: <span class="yb">true</span>
+    <span class="yk">fake</span>:
+      <span class="yk">_count</span>: <span class="yn">5</span>
+      <span class="yk">title</span>: <span class="ys">sentence</span>
+      <span class="yk">body</span>: <span class="ys">text</span>
+
+  <span class="yk">products</span>:
+    <span class="yk">fake</span>:
+      <span class="yk">_count</span>: <span class="yn">20</span>
+      <span class="yk">name</span>: <span class="ys">word</span>
+      <span class="yk">price</span>: <span class="ys">pricetag</span>
+      <span class="yk">description</span>: <span class="ys">sentence</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENDPOINTS -->
+  <div class="endpoints-section" id="endpoints">
+    <div class="section-eyebrow fu" data-fr="// Endpoints générés" data-en="// Generated endpoints">// Endpoints générés</div>
+    <h2 class="fu"><span data-fr="Routes" data-en="Routes">Routes</span> <em data-fr="auto-montées." data-en="auto-mounted.">auto-montées.</em></h2>
+    <p class="section-sub fu" data-fr="Pour chaque modèle déclaré dans fasty.yml, Fasty monte ces routes automatiquement." data-en="For each model declared in fasty.yml, Fasty automatically mounts these routes.">Pour chaque modèle déclaré dans <code>fasty.yml</code>, Fasty monte ces routes automatiquement.</p>
+    <div class="endpoint-grid">
+      <div class="endpoint-card fu">
+        <span class="emethod mget">GET</span>
+        <div class="epath">/{model}</div>
+        <div class="edesc" data-fr="Retourne la collection complète. Avec pagination si activée, et <code>_links</code> HATEOAS si activé." data-en="Returns the full collection. With pagination if enabled, and HATEOAS <code>_links</code> if enabled.">Retourne la collection complète. Avec pagination si activée, et <code>_links</code> HATEOAS si activé.</div>
+        <span class="ebadge">ex: /users</span>
+      </div>
+      <div class="endpoint-card fu">
+        <span class="emethod mget">GET</span>
+        <div class="epath">/{model}/{id}</div>
+        <div class="edesc" data-fr="Retourne un record unique par ID. Inclut <code>_links.self</code> et <code>_links.collection</code>." data-en="Returns a single record by ID. Includes <code>_links.self</code> and <code>_links.collection</code>.">Retourne un record unique par ID. Inclut <code>_links.self</code> et <code>_links.collection</code>.</div>
+        <span class="ebadge">ex: /users/3</span>
+      </div>
+      <div class="endpoint-card fu">
+        <span class="emethod mget">GET</span>
+        <div class="epath">/{model}?page=N</div>
+        <div class="edesc" data-fr="Pagination activable par query param. Retourne un chunk + métadonnées de page." data-en="Pagination via query param. Returns a chunk + page metadata.">Pagination activable par query param. Retourne un chunk + métadonnées de page.</div>
+        <span class="ebadge" data-fr="si pagination: true" data-en="if pagination: true">si pagination: true</span>
+      </div>
+      <div class="endpoint-card fu">
+        <span class="emethod mget">GET</span>
+        <div class="epath">_links <span data-fr="dans chaque réponse" data-en="in every response">dans chaque réponse</span></div>
+        <div class="edesc" data-fr="Quand HATEOAS est activé, chaque objet embarque <code>_links.self</code> et <code>_links.collection</code>." data-en="When HATEOAS is enabled, each object includes <code>_links.self</code> and <code>_links.collection</code>.">Quand HATEOAS est activé, chaque objet embarque <code>_links.self</code> et <code>_links.collection</code>.</div>
+        <span class="ebadge" data-fr="si hateoas: true" data-en="if hateoas: true">si hateoas: true</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RUN SECTION -->
+  <div class="run-section">
+    <div class="section-eyebrow" data-fr="// Démarrage" data-en="// Getting started">// Démarrage</div>
+    <h2><span data-fr="Prêt en" data-en="Up in">Prêt en</span> <em data-fr="30 secondes." data-en="30 seconds.">30 secondes.</em></h2>
+    <p class="section-sub" data-fr="Cloner le repo, créer ton fichier YAML, lancer en local ou via Docker." data-en="Clone the repo, create your YAML file, run locally or via Docker.">Cloner le repo, créer ton fichier YAML, lancer en local ou via Docker.</p>
+
+    <div class="run-tabs">
+      <button class="run-tab active" onclick="switchTab('local', this)" data-fr="Local" data-en="Local">Local</button>
+      <button class="run-tab" onclick="switchTab('docker', this)" data-fr="Docker" data-en="Docker">Docker</button>
+    </div>
+
+    <!-- LOCAL -->
+    <div class="run-box active" id="tab-local">
+      <div class="run-cmd-line" onclick="copyCmd(this, 'git clone https://github.com/dandyArise/fasty')">
+        <span class="rp">$</span>
+        <span class="rc">git clone https://github.com/dandyArise/fasty</span>
+        <button class="rcopy">COPY</button>
+      </div>
+      <div class="run-cmd-line" onclick="copyCmd(this, 'cd fasty')">
+        <span class="rp">$</span>
+        <span class="rc">cd fasty</span>
+        <button class="rcopy">COPY</button>
+      </div>
+      <div class="run-cmd-line" onclick="copyCmd(this, 'pip install -r requirements.txt')">
+        <span class="rp">$</span>
+        <span class="rc">pip install -r requirements.txt</span>
+        <button class="rcopy">COPY</button>
+      </div>
+      <div class="run-cmd-line" onclick="copyCmd(this, 'python -m fasty')">
+        <span class="rp">$</span>
+        <span class="rc">python -m fasty <span class="comment"># → http://localhost:8000</span></span>
+        <button class="rcopy">COPY</button>
+      </div>
+    </div>
+
+    <!-- DOCKER -->
+    <div class="run-box" id="tab-docker">
+      <div class="run-cmd-line" onclick="copyCmd(this, 'git clone https://github.com/dandyArise/fasty')">
+        <span class="rp">$</span>
+        <span class="rc">git clone https://github.com/dandyArise/fasty</span>
+        <button class="rcopy">COPY</button>
+      </div>
+      <div class="run-cmd-line" onclick="copyCmd(this, 'cd fasty')">
+        <span class="rp">$</span>
+        <span class="rc">cd fasty</span>
+        <button class="rcopy">COPY</button>
+      </div>
+      <div class="run-cmd-line" onclick="copyCmd(this, 'docker build -t fasty .')">
+        <span class="rp">$</span>
+        <span class="rc">docker build -t fasty .</span>
+        <button class="rcopy">COPY</button>
+      </div>
+      <div class="run-cmd-line" onclick="copyCmd(this, 'docker run -p 8000:8000 -v $(pwd)/fasty.yml:/app/fasty.yml fasty')">
+        <span class="rp">$</span>
+        <span class="rc">docker run -p 8000:8000 -v $(pwd)/fasty.yml:/app/fasty.yml fasty</span>
+        <button class="rcopy">COPY</button>
+      </div>
+    </div>
+
+    <div style="margin-top:36px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://github.com/dandyArise/fasty" target="_blank" class="btn-p" style="background:var(--yellow);color:#000;" data-fr="Voir sur GitHub ↗" data-en="View on GitHub ↗">Voir sur GitHub ↗</a>
+      <a href="https://github.com/dandyArise/fasty/issues" target="_blank" class="btn-o" style="border-color:rgba(255,255,255,0.15);color:rgba(247,245,240,0.45);" data-fr="Ouvrir une issue" data-en="Open an issue">Ouvrir une issue</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#" class="footer-logo">
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="6" fill="#1a6b3a"/>
+        <path d="M21 5L11 19H18L15 31L25 17H18L21 5Z" fill="#f7f5f0" stroke="#f7f5f0" stroke-width="0.5" stroke-linejoin="round"/>
+      </svg>
+      <span style="font-family:'Fraunces',serif;font-weight:900;font-size:1.1rem;letter-spacing:-0.03em;color:var(--text);">fasty</span>
+    </a>
+    <div class="footer-t">Open source · by dandyArise</div>
+    <div class="footer-links">
+      <a href="https://github.com/dandyArise/fasty" target="_blank">GitHub</a>
+      <a href="https://github.com/dandyArise/fasty/blob/main/README.md" target="_blank">Docs</a>
+      <a href="https://github.com/dandyArise/fasty/issues" target="_blank">Issues</a>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll animations
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('v'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fu').forEach(el => obs.observe(el));
+
+    // Tab switcher (local / docker)
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.run-box').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.run-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      if (btn) {
+        btn.classList.add('active');
+      } else if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
+      }
+    }
+
+    // Copy individual command
+    function copyCmd(el, text) {
+      const success = () => {
+        const btn = el.querySelector('.rcopy');
+        if (btn) {
+          btn.textContent = '✓';
+          btn.style.color = '#f5c842';
+          btn.style.borderColor = '#f5c842';
+          setTimeout(() => { btn.textContent = 'COPY'; btn.style.color = ''; btn.style.borderColor = ''; }, 1800);
+        }
+      };
+      // fallback for file:// or HTTP without secure context
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(success).catch(err => console.error(err));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        success();
+      }
+    }
+
+    // Copy YAML
+    function copyYaml() {
+      const txt = `locale: "fr_FR"\n\nmodels:\n\n  users:\n    pagination: true\n    hateoas: true\n    fake:\n      _count: 10\n      first_name: first_name\n      last_name: last_name\n      email: email\n    data:\n      - id: 100\n        first_name: John\n        last_name: Doe\n        email: john.doe@example.com\n\n  posts:\n    fake:\n      _count: 5\n      title: sentence\n      body: text`;
+      const success = () => {
+        const b = document.querySelector('.yaml-copy-btn');
+        if (b) {
+          b.textContent = 'COPIED!'; b.style.color = '#a5d6a7';
+          setTimeout(() => { b.textContent = 'COPY'; b.style.color = ''; }, 2000);
+        }
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(txt).then(success).catch(err => console.error(err));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = txt;
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        success();
+      }
+    }
+
+    // ── Language toggle ──
+    let currentLang = 'fr';
+
+    function setLang(lang) {
+      currentLang = lang;
+      // toggle button states
+      document.querySelectorAll('.lang-btn').forEach(b => {
+        b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang);
+      });
+      // update all data-fr / data-en elements
+      document.querySelectorAll('[data-fr][data-en]').forEach(el => {
+        const val = el.getAttribute('data-' + lang);
+        if (val !== null) el.innerHTML = val;
+      });
+      // update html lang
+      document.documentElement.lang = lang;
+    }
+  </script>
+</body>
+</html>
